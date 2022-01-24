@@ -55,13 +55,13 @@ int server_handshake(int *prp) {
   int wkp = open(WKP, O_RDONLY);
   printf("Server: just connected to well-known pipe %s\n", WKP);
   if (!fork()) {
+    remove(WKP);
+    printf("Server: just removed well-known pipe %s\n", WKP);
     return 0;
   }
   char prp_name[10];
   read(wkp, prp_name, sizeof prp_name);
   printf("Subserver: just learned that the private pipe is named %s\n", prp_name);
-  remove(WKP);
-  printf("Subserver: just removed well-known pipe %s\n", WKP);
   *prp = open(prp_name, O_WRONLY);
   printf("Subserver: just connected to private pipe %s\n", prp_name);
   int message = rando();
