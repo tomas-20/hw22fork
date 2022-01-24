@@ -20,11 +20,11 @@ int main() {
   from_server = client_handshake( &to_server );
 
   char line[1000];
-  do {
+  while (1) {
     get_input(line, sizeof line);
     write(to_server, line, sizeof line);
     read(from_server, line, sizeof line);
     printf("[%s]\n", line);
-  } while (*line);
+  }
   return 0;
 }
