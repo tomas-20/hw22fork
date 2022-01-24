@@ -54,24 +54,27 @@ int server_handshake(int *prp) {
   printf("Server: just made well-known pipe %s\n", WKP);
   int wkp = open(WKP, O_RDONLY);
   printf("Server: just connected to well-known pipe %s\n", WKP);
+  if (!fork()) {
+    return 0;
+  }
   char prp_name[10];
   read(wkp, prp_name, sizeof prp_name);
-  printf("Server: just learned that the private pipe is named %s\n", prp_name);
+  printf("Subserver: just learned that the private pipe is named %s\n", prp_name);
   remove(WKP);
-  printf("Server: just removed well-known pipe %s\n", WKP);
+  printf("Subserver: just removed well-known pipe %s\n", WKP);
   *prp = open(prp_name, O_WRONLY);
-  printf("Server: just connected to private pipe %s\n", prp_name);
+  printf("Subserver: just connected to private pipe %s\n", prp_name);
   int message = rando();
   write(*prp, &message, sizeof message);
-  printf("Server: just sent secret message %d\n", message);
+  printf("Subserver: just sent secret message %d\n", message);
   int response;
   read(wkp, &response, sizeof response);
-  printf("Server: just recieved response %d\n", response);
+  printf("Subserver: just recieved response %d\n", response);
   if (response != message + 1) {
-    printf("Server: I am not content with response %d as it should be %d\n", response, message + 1);
+    printf("Subserver: I am not content with response %d as it should be %d\n", response, message + 1);
     exit(0);
   }
-  printf("Server: I am content with response %d\n", response);
+  printf("Subserver: I am content with response %d\n", response);
   return wkp;
 }
 
